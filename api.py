@@ -74,6 +74,10 @@ def get_images():
         images = select(Image).order_by(Image.created_at.desc(), Image.id.desc())
         return paginate(session, images)
 
+@app.get("/health/")
+def check_health():
+    return {"status": "ok"}
+
 # Triển khai thực thế ko cần
 # Phục vụ front-end tĩnh nếu thư mục frontend nằm cạnh backend (chạy full-stack local).
 # Khi deploy API-only (VD: HF Space chỉ copy backend/), bỏ qua để không crash.
