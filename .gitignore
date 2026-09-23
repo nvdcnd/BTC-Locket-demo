@@ -1,0 +1,26 @@
+# ==== SECRETS — BẮT BUỘC chặn, .env chứa IMAGEKIT_PRIVATE_KEY ====
+.env
+.env.*
+!.env.example
+
+# ==== Python ====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ==== Database local ====
+*.db
+*.sqlite3
+
+# ==== Test / runtime artifacts ====
+test_upload.jpg
+uvicorn_test.log
+*.log
+
+# ==== IDE / OS ====
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

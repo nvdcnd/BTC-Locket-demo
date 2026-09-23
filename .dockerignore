@@ -1,0 +1,31 @@
+# Git internals — không bao giờ có trong build context
+.git
+.gitignore
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Secrets — bắt buộc phải chặn, .env chứa IMAGEKIT_PRIVATE_KEY
+.env
+.env.*
+!.env.example
+
+# DB local & file test
+*.db
+*.sqlite3
+test_upload.jpg
+uvicorn_test.log
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
