@@ -3,7 +3,7 @@ import os
 import dotenv
 
 # Thư viện base cho FastAPI
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from typing import Optional
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,7 +20,7 @@ from sqlmodel import Session, select
 from database.database import create_db_and_tables, engine
 
 # Thư viện cho ImageKit
-from imagekit_controller import upload_image
+from imagekit_controller import MAX_IMAGE_BYTES, upload_image
 
 # Thư viện cho chạy ứng dụng
 import uvicorn
@@ -54,7 +54,18 @@ async def upload_image_api(
     description: Optional[str] = Form(None),
     name: str = Form("Người trải nghiệm"),
 ):
-    upload_response = await upload_image(data=image, filename=name)
+    # Đọc tối đa 50 KiB + 1 byte để không kéo toàn bộ file lớn vào memory.
+    # Frontend đã nén trước; check này là lớp phòng vệ bắt buộc ở server.
+    image_bytes = await image.read(MAX_IMAGE_BYTES + 1)
+    if not image_bytes:
+        raise HTTPException(status_code=400, detail="Ảnh không hợp lệ hoặc đang rỗng!")
+    if len(image_bytes) > MAX_IMAGE_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Ảnh phải được nén ở frontend và không vượt quá {MAX_IMAGE_BYTES // 1024} KB!",
+        )
+
+    upload_response = await upload_image(data=image_bytes, filename=name)
 
     # "" thay vì None để tương thích với bảng DB cũ (description NOT NULL)
     new_image = Image(url=upload_response, name=name, description=description or "")
